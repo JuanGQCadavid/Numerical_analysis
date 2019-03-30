@@ -10,11 +10,11 @@ double df(double x) {
   return x - f(x) / (-sin(x) + 1);
 }
 
-double fixed_point(double x0, double tolerance, unsigned int iterations) {
+double newton_raphson(double x0, double tolerance, unsigned int iterations) {
   if(tolerance >= 0) {
     if(iterations > 0) {
       double error = 1e100;
-      int count = 1;
+      int count = 0;
       double y0 = f(x0);
 
       while(y0 != 0 && error > tolerance && count < iterations) {
@@ -47,7 +47,7 @@ int main() {
   cin >> x0 >> tolerance >> iterations;
 
   try {
-    double result = fixed_point(x0, tolerance, iterations);
+    double result = newton_raphson(x0, tolerance, iterations);
     printf("x = %e => f(x) = %e\n", result, f(result));
   } catch(char const* exception) {
     cout << exception << endl;

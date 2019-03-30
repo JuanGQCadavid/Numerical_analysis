@@ -4,7 +4,7 @@ using namespace std;
 
 double (*f)(double x) = cos;
 
-double bisection(double xl, double xh, double tolerance, unsigned int iterations) {
+double regula_falsi(double xl, double xh, double tolerance, unsigned int iterations) {
   if(xl <= xh) {
     if(tolerance >= 0) {
       double yl = f(xl), yh = f(xh);
@@ -60,7 +60,7 @@ int main() {
   cin >> xl >> xh >> tolerance >> iterations;
 
   try {
-    double result = bisection(xl, xh, tolerance, iterations);
+    double result = regula_falsi(xl, xh, tolerance, iterations);
     printf("x = %e => f(x) = %e\n", result, f(result));
   } catch(char const* exception) {
     cout << exception << endl;
