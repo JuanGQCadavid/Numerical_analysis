@@ -11,8 +11,7 @@ bool gauss = false,
 
 int marks[MAXN] = {};
 double Ab[MAXN][MAXN + 1] = {};
-double L[MAXN][MAXN + 1] = {};
-double U[MAXN][MAXN + 1] = {};
+double answers[MAXN] = {};
 
 int n = 0;
 
@@ -26,31 +25,40 @@ void print_help() {
     "  by default only the resulting matrix is printed\n\n"
 
     "METHOD:\n"
-    "  gauss\n\n"
+    "  gauss: solve with gauss\n\n"
 
     "MOD:\n"
-    "  partial: partial pivot\n"
-    "  total: total pivot\n"
+    "  partial: solve with partial pivot\n"
+    "  total: solve with total pivot\n"
        << endl;
 }
 
+#define print_variable(x) cout << #x << " = " << x << endl
+
 void print_Ab() {
-  cout << "[A|b]:\n";
+  cout << "Ab = [\n";
   for(int i = 0; i < n; ++i) {
+    cout << "  [";
     for(int j = 0; j <= n; ++j)
-      cout << (j? " " : "") << Ab[i][j];
-    cout << endl;
+      cout << (j? ", " : "") << Ab[i][j];
+    cout << "]\n";
   }
+  cout << "]" << endl;
 }
 
 void print_marks() {
-  cout << "marks:\n";
+  cout << "marks = [";
   for(int i = 0; i < n; ++i)
-    cout << (i? " " : "") << marks[i];
-  cout << endl;
+    cout << (i? ", " : "") << marks[i];
+  cout << "]" << endl;
 }
 
-#define print_variable(x) cout << #x << " = " << x << endl
+void print_answers() {
+  cout << "answers = [";
+  for(int i = 0; i < n; ++i)
+    cout << (i? ", " : "") << answers[i];
+  cout << "]" << endl;
+}
 
 void partial_pivot(int k) {
   double max_val = Ab[k][k];
@@ -97,29 +105,6 @@ void total_pivot(int k) {
   }
 }
 
-void total_pivot_fix_cols() {
-  double A[n][n];
-
-  for(int j = 0; j < n; ++j)
-    if(j != marks[j])
-      for(int i = 0; i < n; ++i)
-        A[i][j] = Ab[i][marks[j]];
-
-  for(int j = 0; j < n; ++j)
-    if(j != marks[j])
-      for(int i = 0; i < n; ++i)
-        Ab[i][j] = A[i][j];
-
-  for(int i = 0; i < n; ++i)
-    marks[i] = i;
-
-  if(debug >= 2) {
-    cout << "* MARKS FIX *" << endl;
-    print_marks();
-    print_Ab();
-  }
-}
-
 void gaussian_elimination() {
   if(debug >= 2) cout << "* GAUSSIAN ELIMINATION *" << endl;
 
@@ -140,12 +125,18 @@ void gaussian_elimination() {
   if(debug >= 1) print_Ab();
 }
 
-void progressive_clearance() {
-
-}
-
 void regressive_clearance() {
+  if(debug >= 2) cout << "* REGRESSIVE CLEARANCE *" << endl;
 
+  for(int i = n - 1; i >= 0; --i) {
+    double sum = 0;
+
+    for(int j = i + 1; j < n; ++j)
+      sum += Ab[i][j] * answers[marks[j]];
+
+    answers[marks[i]] = (Ab[i][n] - sum) / Ab[i][i];
+    if(debug >= 1) print_answers();
+  }
 }
 
 int main(int argc, char** argv) {
@@ -161,32 +152,32 @@ int main(int argc, char** argv) {
       gauss = true;
     else if(!total && arg == "partial")
       partial = true;
-    else if(!partial && arg == "total") {
+    else if(!partial && arg == "total")
       total = true;
-      for(int j = 0; j < MAXN; ++j) marks[j] = j;
-    } else if(debug == 0 && (arg == "1" || arg == "2"))
+    else if(debug == 0 && (arg == "1" || arg == "2"))
       debug = arg[0] - '0';
   }
+
+  for(int i = 0; i < MAXN; ++i) answers[i] = NAN;
+  for(int j = 0; j < MAXN; ++j) marks[j] = j;
 
   cout << "Enter <n>: ";
   cin >> n;
 
   for(int i = 0; i < n; ++i) {
-    cout << "Enter row #" << i + 1 << " of [A|b]: ";
-
-    for(int j = 0; j <= n; ++j)
-      cin >> Ab[i][j];
+    cout << "Enter row #" << i + 1 << " of A|b: ";
+    for(int j = 0; j <= n; ++j) cin >> Ab[i][j];
   }
 
-  print_Ab();
+  if(debug >= 1) print_Ab();
 
   if(gauss) {
     gaussian_elimination();
-    if(total) total_pivot_fix_cols();
+    regressive_clearance();
   }
 
-  cout << "* RESULT *" << endl;
-  print_Ab();
+  if(debug == 0)
+    print_Ab(), print_answers();
 
   return 0;
 }
