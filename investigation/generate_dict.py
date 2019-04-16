@@ -1,7 +1,13 @@
-import mido
 import sys
+import mido
+import audiolazy
 from mido import MidiFile
+from audiolazy import lazy_midi
+from audiolazy.lazy_midi import midi2freq
 
+
+def get_frecuencia(nota):
+    pass
 
 def get_nota(msg):
     texto = str(msg)
@@ -10,6 +16,8 @@ def get_nota(msg):
         nota = texto[pos_nota+5] + texto[pos_nota+6] + texto[pos_nota+7]
     else:
         nota = texto[pos_nota+5] + texto[pos_nota+6]
+
+    nota = midi2freq(int(nota))
 
     return nota
 
@@ -34,8 +42,6 @@ def control(msg):
         return True
     else:
         return False
-
-
 
 def main():
 
