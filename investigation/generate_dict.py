@@ -6,10 +6,9 @@ from audiolazy import lazy_midi
 from audiolazy.lazy_midi import midi2freq
 
 
-def get_frecuencia(nota):
-    pass
-
 def get_nota(msg):
+    """ Método lee el texto producido por el mensaje de conversión del Midi
+    y devuelve el campo correspondiente a la nota """
     texto = str(msg)
     pos_nota = texto.find('note', 10)
     if texto[pos_nota + 7] != ' ':
@@ -22,6 +21,8 @@ def get_nota(msg):
     return nota
 
 def get_vel(msg):
+    """ Método lee el texto producido por el mensaje de conversión del Midi
+    y devuelve el campo correspondiente a la velocidad """
     vel = 0
     texto = str(msg)
     pos_vel = texto.find('velocity', 10)
@@ -29,6 +30,8 @@ def get_vel(msg):
     return vel
 
 def control(msg):
+    """ Método dice si el mensaje de conversión que se está leyendo es un 
+    mensaje de control o un mensaje de contenido """
     texto = str(msg)
     if 'key_signature' in texto:
         return True
@@ -44,6 +47,10 @@ def control(msg):
         return False
 
 def main():
+    
+    """ Método main, se encarga del manejo de las canciones que se quieren leer, usando
+    los métodos anteriores para la creación de un dict con los puntos (tiempo vs frecuencia) 
+    de los archivos midi leídos"""
 
     song = sys.argv[1]
     print('Transformando canción: ', song)
