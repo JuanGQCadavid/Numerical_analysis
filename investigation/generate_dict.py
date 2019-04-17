@@ -16,9 +16,12 @@ def get_nota(msg):
     else:
         nota = texto[pos_nota+5] + texto[pos_nota+6]
 
-    nota = midi2freq(int(nota))
+    if nota.isdigit():
+        nota = midi2freq(int(nota))
+        return nota
+    else:
+        return 0
 
-    return nota
 
 def get_vel(msg):
     """ Método lee el texto producido por el mensaje de conversión del Midi
@@ -46,6 +49,12 @@ def control(msg):
     else:
         return False
 
+
+
+puntos = {}
+def agregar_a_arreglo(x, y):
+    puntos[x] = y
+
 def main():
     
     """ Método main, se encarga del manejo de las canciones que se quieren leer, usando
@@ -55,9 +64,7 @@ def main():
     song = sys.argv[1]
     print('Transformando canción: ', song)
     
-    puntos = {}
-    def agregar_a_arreglo(x, y):
-        puntos[x] = y
+    
 
     tiempo_acumulado = 0
     mid = MidiFile(song)
@@ -65,13 +72,14 @@ def main():
         last_time = -1
         for msg in track:
             if(not control(msg)):
-                tiempo_acumulado += msg.time
-
                 if get_vel(msg) != '0':
                     nota = get_nota(msg)
-                    if tiempo_acumulado != last_time:
-                        agregar_a_arreglo(tiempo_acumulado, nota)
-                        last_time = tiempo_acumulado
+                    if nota != 0:
+                        tiempo_acumulado += msg.time
+                        if tiempo_acumulado != last_time:
+                            #print(str(tiempo_acumulado)+ " " + str(nota))
+                            agregar_a_arreglo(tiempo_acumulado, nota)
+                            last_time = tiempo_acumulado
 
     print(puntos)
     return puntos
