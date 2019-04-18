@@ -6,8 +6,6 @@ Created on Mon Apr 15 21:37:05 2019
 @author: evinracher
 """
 
-import matplotlib.pyplot as plt
-
 def L(X, xk, x):
     result = 1.0
     for xi in X:
