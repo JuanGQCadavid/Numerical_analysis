@@ -1,3 +1,12 @@
+"""
+In this document, I am going to use the JJ's code to generate the dict, graph it
+and create a cut method that randomly delete part of the dict to simulate
+lost of characteristics in a song.
+
+
+"""
+
+
 import sys
 import mido
 import audiolazy
@@ -7,11 +16,18 @@ from audiolazy.lazy_midi import midi2freq
 import matplotlib.pyplot as plt
 import random
 
-"""
-In this document, I am going to use the JJ's code to generate the dict, graph it
-and create a cut method that randomly delete part of the dict to simulate
-lost of characteristics in a song.
-"""
+# Dict used to save the original song
+points = {}
+# Arrays used to save the original song
+times = []
+frecuencies = []
+# Arrays used to save the modified song to be interpolated
+X_array=[]
+Y_array=[]
+# Arrays used to save the repaired song
+X_repaired=[]
+Y_repaired=[]
+
 
 def get_nota(msg):
     """ Método lee el texto producido por el mensaje de conversión del Midi
@@ -56,16 +72,21 @@ def control(msg):
     else:
         return False
 
-
-
-puntos = {}
 def agregar_a_arreglo(x, y):
-    puntos[x] = y
+    points[x] = y
 
-times = []
-frecuencies = []
+
 # Evinracher's code
 def graph_dict(points):
+    """Plot the song represented by a dict of points (X,Y)
+    
+    Parameters
+    ----------
+    
+    points : dict
+        The dict that contains the points (X,Y) to plot
+    """
+    
     plt.plot(range(len(points)), list(points.values()))
     # Label the x axis with the time points
     plt.xticks(range(len(points)), list(points.keys()))
@@ -80,12 +101,8 @@ def graph_arrays(X,Y, title):
     fig.set_ylabel("Frecuency")
     fig.legend(loc='upper center', fontsize='x-large')
 
-# Arrays used to save the modified song to be interpolated
-X_array=[]
-Y_array=[]
 def cut_song(n):
-    """
-    Modify the original song deleting points of it and save the result
+    """Modify the original song deleting points of it and save the result
     in two global arrays X_array and Y_array.
     
     Parameters
@@ -95,9 +112,10 @@ def cut_song(n):
     
     Returns
     -------
-    random_indexes:
+    random_indexes : list
         indexes of points that was deleted
     """
+    
     random_indexes = random.sample(range(0,len(times)-1),n)
     global X_array
     global Y_array 
@@ -123,8 +141,6 @@ def interpolate(X,Y, x):
         y_evaluation += Y[xk]*L(X, X[xk], x)
     return y_evaluation
 
-X_repaired=[]
-Y_repaired=[]
 def repair_song(X):
     global X_repaired
     X_repaired = X_array.copy()
@@ -133,6 +149,14 @@ def repair_song(X):
     for i in X:
         Y_repaired.append(interpolate(X_repaired,Y_repaired, times[i]))
         X_repaired.append(times[i])
+
+def order_song(X,Y):
+    f_dict ={}
+    for i in range(len(X)):
+        f_dict[X[i]] = Y[i]
+    X.sort()
+    for i in range(len(X)):
+        Y[i] = f_dict[X[i]]
         
 def main():
     
@@ -162,12 +186,10 @@ def main():
                             frecuencies.append(nota)
                             last_time = tiempo_acumulado
 
-    #graph_dict(puntos)
+    #graph_dict(points)
     graph_arrays(times, frecuencies, "Original song")
-    x = cut_song(8)
+    x = cut_song(10)
     graph_arrays(X_array,Y_array, "Modified song")
-    print(len(X_array))
-    print(len(Y_array))
     plt.show()
     # MALO de acá en adelante :"V
     repair_song(x)
@@ -176,9 +198,12 @@ def main():
     print(frecuencies)
     print(X_repaired)
     print(Y_repaired)
+    order_song(X_repaired, Y_repaired)
+    print(X_repaired)
+    print(Y_repaired)
     graph_arrays(X_repaired, Y_repaired, "Repaired song")
     plt.show()
-    return puntos
+    return points
     
 if __name__ == '__main__':
     main()
