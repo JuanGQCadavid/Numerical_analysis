@@ -7,10 +7,13 @@ int debug = 0;
 
 bool gauss = false,
   partial = false,
-  total = false;
+  total = false,
+  lu = false;
 
 int marks[MAXN] = {};
 double Ab[MAXN][MAXN + 1] = {};
+double L[MAXN][MAXN] = {};
+double U[MAXN][MAXN] = {};
 double answers[MAXN] = {};
 
 int n = 0;
@@ -25,7 +28,8 @@ void print_help() {
     "  by default only the resulting matrix is printed\n\n"
 
     "METHOD:\n"
-    "  gauss: solve with gauss\n\n"
+    "  gauss: solve with gauss\n"
+    "  lu: solve with lu factorization\n\n"
 
     "MOD:\n"
     "  partial: solve with partial pivot\n"
@@ -33,32 +37,21 @@ void print_help() {
        << endl;
 }
 
-#define print_variable(x) cout << #x << " = " << x << endl
-
-void print_Ab() {
-  cout << "Ab = [\n";
-  for(int i = 0; i < n; ++i) {
-    cout << "  [";
-    for(int j = 0; j <= n; ++j)
-      cout << (j? ", " : "") << Ab[i][j];
-    cout << "]\n";
-  }
-  cout << "]" << endl;
-}
-
-void print_marks() {
-  cout << "marks = [";
-  for(int i = 0; i < n; ++i)
-    cout << (i? ", " : "") << marks[i];
-  cout << "]" << endl;
-}
-
-void print_answers() {
-  cout << "answers = [";
-  for(int i = 0; i < n; ++i)
-    cout << (i? ", " : "") << answers[i];
-  cout << "]" << endl;
-}
+#define print_variable(_x)                      \
+  { cout << #_x " = " << _x << endl; }
+#define print_vector(_vec, _n)                  \
+  { cout << #_vec " = [";                       \
+    for(int _i = 0; _i < _n; ++_i)              \
+      cout << (_i? ", " : "") << _vec[_i];      \
+    cout << "]" << endl; }
+#define print_matrix(_mat, _n, _m)                      \
+  { cout << #_mat " = [\n";                             \
+    for(int _i = 0; _i < _n; ++_i) {                    \
+      cout << "  [";                                    \
+      for(int _j = 0; _j < _m; ++_j)                    \
+        cout << (_j? ", " : "") << _mat[_i][_j];        \
+      cout << "]\n"; }                                  \
+    cout << "]" << endl; }
 
 void partial_pivot(int k) {
   double max_val = Ab[k][k];
@@ -72,9 +65,10 @@ void partial_pivot(int k) {
     for(int i = k; i <= n; ++i)
       swap(Ab[k][i], Ab[max_idx][i]);
 
-  if(debug >= 2 && max_idx != k) {
+  if(debug >= 2) {
     cout << "* PARTIAL PIVOT *" << endl;
-    print_Ab();
+
+    if(max_idx != k) print_matrix(Ab, n, n + 1);
   }
 }
 
@@ -98,10 +92,13 @@ void total_pivot(int k) {
     swap(marks[k], marks[max_idx_col]);
   }
 
-  if(debug >= 2 && (max_idx_row != k || max_idx_col != k)) {
+  if(debug >= 2) {
     cout << "* TOTAL PIVOT *" << endl;
-    print_marks();
-    print_Ab();
+
+    if(max_idx_row != k || max_idx_col != k) {
+      print_vector(marks, n);
+      print_matrix(Ab, n, n + 1);
+    }
   }
 }
 
@@ -120,9 +117,11 @@ void gaussian_elimination() {
       for(int j = k; j <= n; ++j)
         Ab[i][j] -= Ab[k][j] * mik;
     }
+
+    if(debug >= 2) print_matrix(Ab, n, n + 1);
   }
 
-  if(debug >= 1) print_Ab();
+  if(debug == 1) print_matrix(Ab, n, n + 1);
 }
 
 void regressive_clearance() {
@@ -135,11 +134,44 @@ void regressive_clearance() {
       sum += Ab[i][j] * answers[marks[j]];
 
     answers[marks[i]] = (Ab[i][n] - sum) / Ab[i][i];
-    if(debug >= 1) print_answers();
+    if(debug >= 1) print_vector(answers, n);
   }
 }
 
-int main(int argc, char** argv) {
+void build_LU() {
+  if(debug >= 2) cout << "* LU FACTORIZATION *" << endl;
+
+  for(int k = 0; k < n; ++k) {
+    double sum = 0;
+
+    for(int p = 0; p < k; ++p) sum += L[k][p] * U[p][k];
+    L[k][k] = U[k][k] = sqrt(Ab[k][k] - sum);
+
+    for(int i = k + 1; i < n; ++i) {
+      sum = 0;
+      for(int p = 0; p < k; ++p) sum += L[i][p] * U[p][k];
+      L[i][k] = (Ab[i][k] - sum) / U[k][k];
+    }
+
+    for(int j = k + 1; j < n; ++j) {
+      sum = 0;
+      for(int p = 0; p < k; ++p) sum += L[k][p] * U[p][j];
+      U[k][j] = (Ab[k][j] - sum) / L[k][k];
+    }
+
+    if(debug >= 2) {
+      print_matrix(L, n, n);
+      print_matrix(U, n, n);
+    }
+  }
+
+  if(debug == 1) {
+    print_matrix(L, n, n);
+    print_matrix(U, n, n);
+  }
+}
+
+int main(int argc, char** argv, char** env) {
   if(argc == 1) {
     print_help();
     return 0;
@@ -148,8 +180,10 @@ int main(int argc, char** argv) {
   for(int i = 1; i < argc; ++i) {
     string arg = argv[i];
 
-    if(arg == "gauss")
+    if(!lu && arg == "gauss")
       gauss = true;
+    else if(!gauss && arg == "lu")
+      lu = true;
     else if(!total && arg == "partial")
       partial = true;
     else if(!partial && arg == "total")
@@ -169,15 +203,19 @@ int main(int argc, char** argv) {
     for(int j = 0; j <= n; ++j) cin >> Ab[i][j];
   }
 
-  if(debug >= 1) print_Ab();
+  if(debug >= 1) print_matrix(Ab, n, n + 1);
 
   if(gauss) {
     gaussian_elimination();
     regressive_clearance();
-  }
 
-  if(debug == 0)
-    print_Ab(), print_answers();
+    if(debug == 0) {
+      print_matrix(Ab, n, n + 1);
+      print_vector(answers, n);
+    }
+  } else if(lu) {
+    build_LU();
+  }
 
   return 0;
 }
