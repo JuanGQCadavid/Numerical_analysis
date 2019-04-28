@@ -68,6 +68,7 @@ def main():
 
     tiempo_acumulado = 0
     mid = MidiFile(song)
+    archivo = open("puntos.txt", "w+")
     for i, track in enumerate(mid.tracks):
         last_time = -1
         for msg in track:
@@ -79,9 +80,12 @@ def main():
                         if tiempo_acumulado != last_time:
                             #print(str(tiempo_acumulado)+ " " + str(nota))
                             agregar_a_arreglo(tiempo_acumulado, nota)
+                            archivo.write(str(tiempo_acumulado) + " " + str(nota))
+                            archivo.write("\n")
                             last_time = tiempo_acumulado
 
     print(puntos)
+    archivo.close()
     return puntos
     
 if __name__ == '__main__':
