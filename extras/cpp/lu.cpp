@@ -30,11 +30,10 @@ double x[MAXN] = {};
 int n = 0;
 
 void lu_factorization() {
-  cout << "* LU FACTORIZATION *" << endl;
+  cout << "* LU FACTORIZATION LU = A *" << endl;
 
   for(int k = 0; k < n; ++k) {
     double sum = 0;
-
     for(int p = 0; p < k; ++p) sum += L[k][p] * U[p][k];
     L[k][k] = U[k][k] = sqrt(A[k][k] - sum);
 
@@ -55,30 +54,26 @@ void lu_factorization() {
   }
 }
 
-void regressive_clearance() {
-  cout << "* REGRESSIVE CLEARANCE *" << endl;
+void progressive_clearance() {
+  cout << "* PROGRESSIVE CLEARANCE Lz = b *" << endl;
 
-  for(int i = n - 1; i >= 0; --i) {
+  for(int i = 0; i < n; ++i) {
     double sum = 0;
+    for(int j = 0; j < i; ++j) sum += L[i][j] * z[j];
+    z[i] = (b[i] - sum) / L[i][i];
 
-    for(int j = i + 1; j < n; ++j)
-      sum += U[i][j] * z[j];
-
-    z[i] = (b[i] - sum) / U[i][i];
     print_vector(z, n);
   }
 }
 
-void progressive_clearance() {
-  cout << "* PROGRESSIVE CLEARANCE *" << endl;
+void regressive_clearance() {
+  cout << "* REGRESSIVE CLEARANCE Ux = z *" << endl;
 
-  for(int i = 0; i < n; ++i) {
+  for(int i = n - 1; i >= 0; --i) {
     double sum = 0;
+    for(int j = i + 1; j < n; ++j) sum += U[i][j] * x[j];
+    x[i] = (z[i] - sum) / U[i][i];
 
-    for(int j = 0; j < i; ++j)
-      sum += L[i][j] * x[j];
-
-    x[i] = (z[i] - sum) / L[i][i];
     print_vector(x, n);
   }
 }
@@ -97,8 +92,8 @@ int main(int argc, char** argv, char** env) {
   print_vector(b, n);
 
   lu_factorization();
-  regressive_clearance();
   progressive_clearance();
+  regressive_clearance();
 
   return 0;
 }
