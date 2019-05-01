@@ -141,7 +141,7 @@ def L(X, xk, x):
             result *= (x - xi)/(xk - xi)
     return result
 
-def interpolate_by_newton(X,Y, x):
+def interpolate_by_lagrange(X,Y, x):
     y_evaluation = 0.0
     n = len(X)
     for xk in range(n):
@@ -169,7 +169,7 @@ def repair_song_interpolating(X, interpolation_type):
     """Get the repaired song and save it into X_repaired and Y_repaired lists
     
     This method can use two types of interpolations for generated the repaired
-    song: newton and neville
+    song: lagrange and neville
     
     Parameters
     ----------
@@ -177,7 +177,7 @@ def repair_song_interpolating(X, interpolation_type):
         A list of indexes of times list that will be the x values for each
         interpolation
     interpolation_type : str
-        A string with the name of the interpolation. It can take either "newton"
+        A string with the name of the interpolation. It can take either "lagrange"
         or "neville" as value
     
     Raises
@@ -190,8 +190,8 @@ def repair_song_interpolating(X, interpolation_type):
     global Y_repaired
     Y_repaired = Y_array.copy()
     for i in X:
-        if(interpolation_type == "newton"):
-            Y_repaired.append(interpolate_by_newton(X_repaired,Y_repaired, times[i]))
+        if(interpolation_type == "lagrange"):
+            Y_repaired.append(interpolate_by_lagrange(X_repaired,Y_repaired, times[i]))
         elif(interpolation_type== "neville"):
             Y_repaired.append(interpolate_by_neville(X_array,Y_array, times[i]))
         else:
@@ -242,7 +242,7 @@ def main():
     graph_arrays(X_array,Y_array, "Modified song")
     plt.show()
     try:
-        repair_song_interpolating(x, "neville")
+        repair_song_interpolating(x, "lagrange")
         graph_arrays(times, frecuencies, "Original song")
         order_song(X_repaired, Y_repaired)
         graph_arrays(X_repaired, Y_repaired, "Repaired song")
