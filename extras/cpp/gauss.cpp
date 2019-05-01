@@ -48,7 +48,7 @@ void total_pivot(int k) {
 
   for(int i = k; i < n; ++i)
     for(int j = k; j < n; ++j)
-      if(Ab[i][j] > max_val)
+      if(abs(Ab[i][j]) > abs(max_val))
         max_val = Ab[i][j], max_idx_row = i, max_idx_col = j;
 
   if(max_idx_row != k)

@@ -1,4 +1,4 @@
-#include <cmath>
+#include <bits/stdc++.h>
 
 #define MAXN 10
 
@@ -73,16 +73,117 @@ double det(Matrix A) {
 }
 
 Matrix inverse(Matrix A) {  
-  Matrix result, L, U;
+  Matrix L, U;
   lu_factorization(A, L, U);
 
-  Vector b;
   for(int i = 0; i < n; ++i) {
-    b[i] = 1; if(i > 0) b[i - 1] = 0;
+    Vector b; b[i] = 1;
     Vector z = progressive_clearance(L, b);
     Vector x = regressive_clearance(U, z);
-    //where does the vector go? as a column or as a row?
+    for(int j = 0; j < n; ++j) A[j][i] = x[j];
   }
 
-  return result;
+  return A;
+}
+
+Matrix multiply(Matrix A, Matrix B) {
+  Matrix C;
+  for(int i = 0; i < n; ++i)
+    for(int j = 0; j < n; ++j)
+      for(int k = 0; k < n; ++k)
+        C[i][j] += A[i][k] * B[k][j];
+  return C;
+}
+
+Vector multiply(Matrix A, Vector b) {
+  Vector c;
+  for(int i = 0; i < n; ++i)
+    for(int j = 0; j < n; ++j)
+      c[i] += A[i][j] * b[j];
+  return c;
+}
+
+Matrix add(Matrix A, Matrix B) {
+  for(int i = 0; i < n; ++i)
+    for(int j = 0; j < n; ++j)
+      A[i][j] = A[i][j] + B[i][j];
+  return A;
+}
+
+Vector add(Vector a, Vector b) {
+  for(int i = 0; i < n; ++i)
+    a[i] = a[i] + b[i];
+  return a;
+}
+
+double norminf(Vector b) {
+  double max_value = 0;
+  for(int i = 0; i < n; ++i)
+    max_value = std::max(max_value, b[i]);
+  return max_value;
+}
+
+double norm1(Vector b) {
+  double acum = 0;
+  for(int i = 0; i < n; ++i)
+    acum += std::abs(b[i]);
+  return acum;
+}
+
+double norm2(Vector b) {
+  double acum = 0;
+  for(int i = 0; i < n; ++i)
+    acum += b[i] * b[i];
+  return std::sqrt(acum);
+}
+
+double norminf(Matrix A) {
+  double max_value = 0;
+  for(int i = 0; i < n; ++i)
+    for(int j = 0; j < n; ++j)
+      max_value = std::max(max_value, A[i][j]);
+  return max_value;
+}
+
+double norm1(Matrix A) {
+  double acum = 0;
+  for(int i = 0; i < n; ++i)
+    for(int j = 0; j < n; ++j)
+    acum += std::abs(A[i][j]);
+  return acum;
+}
+
+double norm2(Matrix A) {
+  Matrix (*transpose)(Matrix);
+  double (*p)(Matrix);
+  return std::sqrt(p(multiply(transpose(A), A)));
+}
+
+double normfrobenius(Matrix A) {
+  double acum = 0;
+  for(int i = 0; i < n; ++i)
+    for(int j = 0; j < n; ++j)
+      acum += A[i][j] * A[i][j];
+  return std::sqrt(acum);
+}
+
+Vector relaxed_jacobi(Matrix A, Vector b, Vector x0, double lambda) {
+  Vector x1;
+  for(int i = 0; i < n; ++i) {
+    double acum = 0;
+    for(int j = 0; j < n; ++j) if(j != i) acum += A[i][j] * x0[j];
+    x1[i] = lambda * ((b[i] - acum) / A[i][i]) + (1 - lambda) * x0[i];
+  }
+
+  return x1;
+}
+
+Vector relaxed_gauss_seidel(Matrix A, Vector b, Vector x0, double lambda) {
+  for(int i = 0; i < n; ++i) {
+    double acum = 0;
+    for(int j = 0; j < n; ++j) if(j != i) acum += A[i][j] * x0[j];
+    x0[i] = lambda * ((b[i] - acum) / A[i][i]) + (1 - lambda) * x0[i];
+  }
+
+  return x0;
 }
