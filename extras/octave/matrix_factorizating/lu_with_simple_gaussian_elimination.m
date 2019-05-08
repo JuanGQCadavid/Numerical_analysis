@@ -1,3 +1,4 @@
+clear global digits;
 global digits = 9;
 output_precision(9)
 #Correct decimals with round
