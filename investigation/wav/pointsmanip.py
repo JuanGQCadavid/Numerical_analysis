@@ -2,15 +2,6 @@ import random
 
 # Percent is not a percent. It's a value between 0 and 1
 
-def cut(x, y, percent):
-    """
-    Returns <x> and <y> without a random <percent> number of points.
-    * Bug: If it cuts one of the first three points it can become a problem as
-    they're used for recovering the delta time.
-    """
-    result = [(i, j) for i, j in zip(x[2:], y[2:]) if random.random() >= percent]
-    return [i for i, j in result], [j for i, j in result]
-
 def noisy(y, percent):
     """
     Returns <y> with a noisy random <percent> number of points.
