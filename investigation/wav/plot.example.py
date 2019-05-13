@@ -2,11 +2,15 @@
 
 import matplotlib.pyplot as plt
 from scipy.io import wavfile
-from wavmanip import wav2points
+import damage
 
 sample_rate, samples = wavfile.read('songs/hakuna_matata.wav')
-x, y = wav2points(sample_rate, samples)
-plt.xlabel('Time [s]')
+
+newsamples = samples.copy()
+damage.noiseadd(newsamples, 0.5)
+
+plt.xlabel('Frame')
 plt.ylabel('Frequency [Hz]')
-plt.plot(x, y)
+plt.plot(samples[1000000:1000100])
+plt.plot(newsamples[1000000:1000100])
 plt.show()

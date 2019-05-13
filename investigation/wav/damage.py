@@ -1,7 +1,7 @@
 import random
 import numpy as np
 
-def addnoise(y, percent):
+def noiseadd(y, percent):
     """
     Returns <y> with a noisy random <percent> number of points.
     Noisiness means the value which was y0 becomes a value between [0, 2 * y0]
