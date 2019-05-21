@@ -11,7 +11,6 @@ using namespace std;
 
 double (*f)(double x) = exp;
 
-
 double fx2points(double x, double h) {
   return (f(x + h) - f(x)) / h;
 }
