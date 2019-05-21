@@ -4,17 +4,19 @@ using namespace std;
 
 double (*f)(double x) = exp;
 
-double trap(double a, double b) {
-  return (b - a) * (f(a) + f(b)) / 2;
+double minitrapezoid(double x0, double x1) {
+  return (x1 - x0) * (f(x0) + f(x1)) / 2;
 }
 
-double bigtrap(double a, double b, int n) {
+double trapezoid(double x0, double xn, int n) {
+  double h = (xn - x0) / n;
   double acum = 0;
+
   for(int i = 1; i < n; ++i) {
-    acum += f(a + ((b - a) / n) * i);
+    acum += f(x0 + h * i);
   }
 
-  return ((b - a) / n) * (f(a) + f(b) + 2 * acum);
+  return (h / 2) * (f(x0) + 2 * acum + f(xn));
 }
 
 double minisimpson13(double x0, double x1, double x2, double h) {
@@ -23,18 +25,19 @@ double minisimpson13(double x0, double x1, double x2, double h) {
 
 double simpson13(double x0, double xn, int n) {
   double h = (xn - x0) / n;
+
   double oddacum = 0;
   double evenacum = 0;
 
-  for(int i = 1; i < n; i+=2) {
+  for(int i = 1; i < n; i += 2) {
     oddacum += f(x0 + h * i);
   }
 
-  for(int i = 2; i < n; i+=2) {
+  for(int i = 2; i < n; i += 2) {
     evenacum = f(x0 + h * i);
   }
 
-  return (h / 3) * (f(x0) + f(xn) + 4 * oddacum + 2 * evenacum);
+  return (h / 3) * (f(x0) + 4 * oddacum + 2 * evenacum + f(xn));
 }
 
 double minisimpson38(double x0, double x1, double x2, double x3, double h) {
@@ -42,10 +45,10 @@ double minisimpson38(double x0, double x1, double x2, double x3, double h) {
 }
 
 double simpson38(double x0, double xn, int n) {
+  double h = (xn - x0) / n;
   double acumno3 = 0;
   double acum3 = 0;
-  double h = (xn - x0) / n;
-  
+
   for(int i = 1; i < n; ++i) {
     if(i % 3 == 0) {
       acum3 += f(x0 + h * i);
@@ -53,8 +56,8 @@ double simpson38(double x0, double xn, int n) {
       acumno3 += f(x0 + h * i);
     }
   }
-  
-  return (3 * h / 8) * (6 * acumno3 + 2 * acum3 + f(x0) + f(xn));
+
+  return (3 * h / 8) * (f(x0) + 3 * acumno3 + 2 * acum3 + f(xn));
 }
 
 int main() {
@@ -62,6 +65,8 @@ int main() {
   int n;
   cout << "Enter <a> <b> <n> for calculating INTEGRAL(exp, a, b): ";
   cin >> a >> b;
-  cout << trap(a, b) << endl;
-  cout << bigtrap(a, b, n) << endl;
+  cout << trapezoid(a, b, n) << endl;
+  cout << simpson13(a, b, n) << endl;
+  cout << simpson38(a, b, n) << endl;
+  cout << exp(b) - exp(a) << endl;
 }
