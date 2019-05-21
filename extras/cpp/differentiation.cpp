@@ -2,13 +2,6 @@
 
 using namespace std;
 
-#define errfx2points (h / 2) * fxx(xi)
-#define errfx3pointsleft h * h / 3 * fxxx(xi)
-#define errfx3pointsmiddle h * h / 6 * fxxx(xi)
-#define errfx3pointsright h * h / 3 * fxxx(xi)
-#define errfx5pointsmiddle1 ((h * h) * (h * h)) / 30 * fxxxx(xi)
-#define errfx5pointsforward ((h * h) * (h * h)) / 5 * fxxxxx(xi)
-
 double (*f)(double x) = exp;
 
 double fx2points(double x, double h) {

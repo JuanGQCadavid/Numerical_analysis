@@ -2,12 +2,6 @@
 
 using namespace std;
 
-#define errtrap fxx(xi) * pow(b - a, 3) / 12
-#define errminisim13 fxxxx(xi) * (-1 / 90 * pow(h, 5))
-#define errsim13 h / 3 * errminisim13
-#define errminisim38 - fxxxx(xi) * pow(b - a, 5) / 6480
-#define errsim38 
-
 double (*f)(double x) = exp;
 
 double trap(double a, double b) {
