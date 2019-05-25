@@ -34,7 +34,7 @@ double simpson13(double x0, double xn, int n) {
   }
 
   for(int i = 2; i < n; i += 2) {
-    evenacum = f(x0 + h * i);
+    evenacum += f(x0 + h * i);
   }
 
   return (h / 3) * (f(x0) + 4 * oddacum + 2 * evenacum + f(xn));
@@ -65,8 +65,7 @@ int main() {
   int n;
   cout << "Enter <a> <b> <n> for calculating INTEGRAL(exp, a, b): ";
   cin >> a >> b;
-  cout << trapezoid(a, b, n) << endl;
-  cout << simpson13(a, b, n) << endl;
-  cout << simpson38(a, b, n) << endl;
-  cout << exp(b) - exp(a) << endl;
+  cout << "trapezoid: " << trapezoid(a, b, n) << endl;
+  cout << "simpson13: " << simpson13(a, b, n) << endl;
+  cout << "simpson38: " << simpson38(a, b, n) << endl;
 }
