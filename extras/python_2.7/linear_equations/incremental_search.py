@@ -4,8 +4,8 @@ import math
 def fun(x):
  return math.exp(3*x - 12) + x * math.cos(3*x) - pow(x, 2) + 4
 
-def incremental_search(xi, fxi):
- global cont
+def incremental_search(xi, fxi, m_iter):
+ cont = 1
  xs = xi + delta
  fxs = fun(xs)
  print "x   y"
@@ -21,10 +21,8 @@ def incremental_search(xi, fxi):
   print str(xs) + " is a root"
  elif fxi*fxs < 1:
   print str("there is a root in ["+ str(xi) +","+ str(xs) +"]")
-  return xs
  else:
   print str("failed in "+ str(cont) +" iterations")
- return None
 
 xi = input("enter the initial value: ")
 delta = input("enter the delta value: ")
@@ -33,9 +31,5 @@ fxi = fun(xi)
 if fxi == 0:
  print str(xi)+str(" is root")
 else:
- cont = 1
- xa = incremental_search(xi, fxi)
- while xa != None:
-  cont = cont + 1
-  fxa = fun(xa)
-  xa = incremental_search(xa, fxa) 
+ incremental_search(xi, fxi, m_iter)
+ 

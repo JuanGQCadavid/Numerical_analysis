@@ -3,7 +3,7 @@ import math
 def f(x):
     return math.pow(x,3) + 4 * math.pow(x,2) - 10
 
-def fixed_point(x0, x1, tol, niter):
+def secant(x0, x1, tol, niter):
     fx0 = f(x0)
     if fx0 == 0:
         print str(x0) + " is a root"
@@ -36,4 +36,4 @@ def fixed_point(x0, x1, tol, niter):
         print "failed in " + str(cont) + " iterations"
 # 5 cifras: 5 * 10^-5
 # 5 decimales: 0.5 * 10^-5
-fixed_point(1.3, 1.4, math.pow(10,-8), 20)
+secant(1.3, 1.4, math.pow(10,-8), 20)

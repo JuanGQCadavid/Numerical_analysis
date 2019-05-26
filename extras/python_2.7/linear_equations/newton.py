@@ -6,7 +6,7 @@ def f(x):
 def df(x):
     return 3*math.pow(x,2) + 8 * x
 
-def fixed_point(x0, tol, niter):
+def newton(x0, tol, niter):
     fx = f(x0)
     dfx = df(x0)
     error = tol + 1
@@ -34,4 +34,4 @@ def fixed_point(x0, tol, niter):
         print "failed in " + str(cont) + " iterations"
 # 5 cifras: 5 * 10^-5
 # 5 decimales: 0.5 * 10^-5
-fixed_point(1.5, 0.5 * math.pow(10,-8), 20)
+newton(1.5, 0.5 * math.pow(10,-8), 20)

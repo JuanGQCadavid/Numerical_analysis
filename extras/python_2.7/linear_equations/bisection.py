@@ -39,8 +39,8 @@ def bisection(xi, xs, tol, niter):
             print "failed in "+ str(cont) +" iterations"
     else:
         print "incorrect interval"
-#xi = input("enter xi value: ")
-#xs = input("enter xs value: ")
-#tol = input("enter the tolerance: ")
-#niter = input("enter the iterations number: ")
-bisection(-1,0,10e-6,30)
+xi = input("enter xi value: ")
+xs = input("enter xs value: ")
+tol = input("enter the tolerance: ")
+niter = input("enter the iterations number: ")
+bisection(xi,xs,tol,niter)

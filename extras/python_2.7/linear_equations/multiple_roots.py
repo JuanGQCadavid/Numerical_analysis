@@ -33,6 +33,8 @@ def multiple_roots(x0, tol, niter):
         print "iterations: " + str(cont)
         print "F(X); " + str(fx)
         print "error: " + str(error)
+    elif den == 0:
+        print "dividing by zero"
     else:
         print "failed in " + str(cont) + " iterations"
 # 5 cifras: 5 * 10^-8
