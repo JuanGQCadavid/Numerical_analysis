@@ -8,32 +8,31 @@ import matplotlib.pyplot as plt
 samplerate, samples = wavfile.read('songs/hakuna_matata.wav')
 samples = samples[5000000:5000100]
 
-oldsamples = samples.copy()
-damage.noiseadd(oldsamples, 0.3)
-matches = recognize.cheat(samples, oldsamples)
-x, y = utils.tovalidxy(oldsamples, matches)
+newsamples = samples.copy()
+damage.noiseadd(newsamples, 0.3)
+matches = recognize.cheat(samples, newsamples, false_positives=0.04, false_negatives=0.1)
+x, y = utils.tovalidxy(newsamples, matches)
 
 flinear = interp1d(x, y, fill_value='extrapolate')
 fcubic = interp1d(x, y, kind='cubic', fill_value='extrapolate')
-
-newsamples = oldsamples.copy()
 
 plt.subplot(211)
 
 utils.repair(newsamples, matches, flinear)
 
-plt.xlabel('Frame')
+plt.title('Linear')
 plt.ylabel('Frequency [Hz]')
-plt.plot(oldsamples)
-plt.plot(newsamples)
+plt.plot(samples, label='real song')
+plt.plot(newsamples, label='interpolated song')
 
 plt.subplot(212)
 
 utils.repair(newsamples, matches, fcubic)
 
+plt.title('Cubic')
 plt.xlabel('Frame')
 plt.ylabel('Frequency [Hz]')
-plt.plot(oldsamples)
-plt.plot(newsamples)
+plt.plot(samples, label='real song')
+plt.plot(newsamples, label='interpolated song')
 
 plt.show()
