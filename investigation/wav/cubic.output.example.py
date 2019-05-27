@@ -2,7 +2,7 @@
 
 from scipy.io import wavfile
 from scipy.interpolate import interp1d
-import damage, recognize, utils
+import damage, recognize, utils, evaluate
 
 sample_rate, samples = wavfile.read('songs/hakuna_matata.wav')
 
@@ -19,3 +19,5 @@ fixedy = f(invalidx)
 
 utils.replace(newsamples, invalidx, fixedy)
 wavfile.write('songs/zerofill_cheat_cubic_hakuna_matata.wav', sample_rate, newsamples)
+
+evaluate.study(samples, newsamples, matches=matches)

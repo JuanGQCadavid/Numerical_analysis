@@ -22,8 +22,9 @@ utils.repair(newsamples, matches, flinear)
 
 plt.title('Linear')
 plt.ylabel('Frequency [Hz]')
-plt.plot(samples, label='real song')
-plt.plot(newsamples, label='interpolated song')
+plt.plot(samples, label='real')
+plt.plot(newsamples, label='interpolated')
+plt.legend(loc='best')
 
 plt.subplot(212)
 
@@ -32,7 +33,8 @@ utils.repair(newsamples, matches, fcubic)
 plt.title('Cubic')
 plt.xlabel('Frame')
 plt.ylabel('Frequency [Hz]')
-plt.plot(samples, label='real song')
-plt.plot(newsamples, label='interpolated song')
+plt.plot(samples, label='real')
+plt.plot(newsamples, label='interpolated')
+plt.legend(loc='best')
 
 plt.show()
