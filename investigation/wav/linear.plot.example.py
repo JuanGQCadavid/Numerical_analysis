@@ -8,7 +8,7 @@ sample_rate, samples = wavfile.read('songs/hakuna_matata.wav')
 samples = samples[5000000:5000100]
 
 newsamples = samples.copy()
-damage.zerofill(newsamples, 0.5, blocksize=3)
+damage.zerofill(newsamples, 0.5, blocksize=2)
 
 matches = recognize.cheat(samples, newsamples)
 x, y = utils.tovalidxy(newsamples, matches)
@@ -17,8 +17,10 @@ utils.repair(newsamples, matches, f)
 
 import matplotlib.pyplot as plt
 
+plt.title('Linear interpolation')
 plt.xlabel('Frame')
-plt.ylabel('Frequency [Hz]')
-plt.plot(samples)
-plt.plot(newsamples)
+plt.ylabel('Amplitude')
+plt.plot(samples, label='real')
+plt.plot(newsamples, label='interpolated')
+plt.legend(loc='best')
 plt.show()

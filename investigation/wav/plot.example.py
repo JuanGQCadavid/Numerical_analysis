@@ -9,7 +9,7 @@ samplerate, samples = wavfile.read('songs/hakuna_matata.wav')
 samples = samples[5000000:5000100]
 
 newsamples = samples.copy()
-damage.noiseadd(newsamples, 0.3)
+damage.noiseadd(newsamples, 0.7, 0.3)
 matches = recognize.cheat(samples, newsamples, false_positives=0.04, false_negatives=0.1)
 x, y = utils.tovalidxy(newsamples, matches)
 
@@ -21,7 +21,7 @@ plt.subplot(211)
 utils.repair(newsamples, matches, flinear)
 
 plt.title('Linear')
-plt.ylabel('Frequency [Hz]')
+plt.ylabel('Amplitude')
 plt.plot(samples, label='real')
 plt.plot(newsamples, label='interpolated')
 plt.legend(loc='best')
@@ -32,7 +32,7 @@ utils.repair(newsamples, matches, fcubic)
 
 plt.title('Cubic')
 plt.xlabel('Frame')
-plt.ylabel('Frequency [Hz]')
+plt.ylabel('Amplitude')
 plt.plot(samples, label='real')
 plt.plot(newsamples, label='interpolated')
 plt.legend(loc='best')

@@ -5,7 +5,7 @@ from scipy.interpolate import BarycentricInterpolator
 import damage, recognize, utils
 
 sample_rate, samples = wavfile.read('songs/hakuna_matata.wav')
-samples = samples[5000000:5000020]
+samples = samples[5000000:5000050]
 
 newsamples = samples.copy()
 damage.zerofill(newsamples, 0.3)
@@ -17,8 +17,10 @@ utils.repair(newsamples, matches, f)
 
 import matplotlib.pyplot as plt
 
+plt.title('Lagrange interpolation')
 plt.xlabel('Frame')
-plt.ylabel('Frequency [Hz]')
-plt.plot(samples)
-plt.plot(newsamples)
+plt.ylabel('Amplitude')
+plt.plot(samples, label='real')
+plt.plot(newsamples, label='interpolated')
+plt.legend(loc='best')
 plt.show()
