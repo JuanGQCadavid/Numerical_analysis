@@ -1,7 +1,7 @@
 import random
 import numpy as np
 
-def noiseadd(y, percent):
+def noiseadd(y, percent, rate):
     """
     Returns <y> with a noisy random <percent> number of points.
     Noisiness means the value which was y0 becomes a value between [0, 2 * y0]
@@ -11,7 +11,7 @@ def noiseadd(y, percent):
     """
     for i in range(len(y)):
         if random.random() < percent:
-            y[i] *= random.uniform(0, 2)
+            y[i] *= random.uniform(1 - rate, 1 + rate)
 
 def zerofill(y, percent, blocksize=1):
     """Makes a <percent> of the values 0. It's a trivial function."""
