@@ -8,7 +8,7 @@ sample_rate, samples = wavfile.read('songs/hakuna_matata.wav')
 samples = samples[5000000:5000100]
 
 newsamples = samples.copy()
-damage.zerofill(newsamples, 0.5)
+damage.zerofill(newsamples, 0.5, blocksize=3)
 
 matches = recognize.cheat(samples, newsamples)
 x, y = utils.tovalidxy(newsamples, matches)

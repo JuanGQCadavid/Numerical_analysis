@@ -13,11 +13,16 @@ def noiseadd(y, percent):
         if random.random() < percent:
             y[i] *= random.uniform(0, 2)
 
-def zerofill(y, percent):
+def zerofill(y, percent, blocksize=1):
     """Makes a <percent> of the values 0. It's a trivial function."""
-    for i in range(len(y)):
+    i = 0
+    while i < len(y):
         if random.random() < percent:
-            y[i] = 0
+            m = min(blocksize, len(y) - i)
+            y[i:i + m] = [0] * m
+            i += m
+        else:
+            i += 1
 
 def invert(y, percent):
     """Makes <percent> of the values become: y -> -y. Another trivial one."""
