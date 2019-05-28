@@ -7,10 +7,10 @@ import damage, recognize, utils, evaluate
 sample_rate, samples = wavfile.read('songs/hakuna_matata.wav')
 
 newsamples = samples.copy()
-damage.zerofill(newsamples, 0.05, blocksize=10)
+damage.zerofill(newsamples, 0.5)
 wavfile.write('songs/zerofill_hakuna_matata.wav', sample_rate, newsamples)
 
-matches = recognize.cheat(samples, newsamples)
+matches = recognize.cheat(samples, newsamples, false_negatives=0.01)
 validx, validy = utils.tovalidxy(newsamples, matches)
 f = interp1d(validx, validy, kind='cubic', fill_value='extrapolate')
 
