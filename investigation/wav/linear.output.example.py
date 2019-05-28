@@ -7,7 +7,7 @@ import damage, recognize, utils, evaluate
 sample_rate, samples = wavfile.read('songs/hakuna_matata.wav')
 
 newsamples = samples.copy()
-damage.zerofill(newsamples, 0.5)
+damage.zerofill(newsamples, 0.00005, blocksize=1000)
 wavfile.write('songs/zerofill_hakuna_matata.wav', sample_rate, newsamples)
 
 matches = recognize.cheat(samples, newsamples)
