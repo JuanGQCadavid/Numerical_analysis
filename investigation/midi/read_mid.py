@@ -1,7 +1,8 @@
 import sys
 import mido
+import pickle
 import audiolazy
-from mido import MidiFile, MidiTrack, Message, MAX_PITCHWHEEL
+from mido import MidiFile, Message, MAX_PITCHWHEEL
 from audiolazy import lazy_midi
 from audiolazy.lazy_midi import midi2freq, freq2midi
 
@@ -18,25 +19,32 @@ def get_vel(msg):
     return vel
 
 
-# Esto es para guardar los meta y las notas en un archivo de texto para poder 
-# desacoplar los métodos en dos archivos diferentes, uno "read_mid" y otro "create_mid"
-# Luego se hace bien, por ahora todo en un mismo archivo
-'''
 def create_txt(track, freqs, times, metas):
+    '''
+    Crea documentos que contienen la información de cada track del midi
+    1 para las frecuencias, 1 para los tiempos y 1 para los meta mensajes
+    '''
+
     freqs_file = open("frequencias" + str(track) + ".txt", "w+")
     times_file = open("tiempos" + str(track) + ".txt", "w+")
-    metas_file = open("metamsgs" + str(track) + ".txt", "w+")
+    metas_file = open("metamsgs" + str(track) + ".txt", "wb")
 
-    freqs_file.write(freqs)
-    times_file.write(times)
-    metas_file.write(metas)
+    for f in freqs:
+        freqs_file.write(str(int(f)))
+        freqs_file.write("\n")
+
+    for t in times:
+        times_file.write(str(t))
+        times_file.write("\n")
+
+    pickle.dump(metas, metas_file)
 
     freqs_file.close()
     times_file.close()
     metas_file.close()
-'''
 
-def read_midi(song):
+
+def read_mid(song):
     '''
     Guarda 3 listas, una con las frecuencias (notas), otra con los tiempos y otra con los metamensajes de la canción
     '''
@@ -52,6 +60,7 @@ def read_midi(song):
         frequencias = []
         tiempos = []
         meta_msgs = []
+        i = 0
         for msg in track:
             if msg.type == 'note_on':
 
@@ -74,59 +83,15 @@ def read_midi(song):
 
 
         my_tracks.append([frequencias, tiempos, meta_msgs])
-        #create_txt(i, frequencias, tiempos, meta_msg)
-    return(my_tracks)
-
-
-
-def create_mid(tracks, song):
-    '''
-    Recibe una lista de [frecuencias, tiempos meta_mensajes] y la ruta del midi original
-    Convierte esa información en un midi
-    '''
-
-    original = MidiFile(song)
-    mid = MidiFile(type = 1)
-    mid.ticks_per_beat = original.ticks_per_beat
-
-    
-    for track in tracks:
-        track_i = MidiTrack()
-        
-        # Agregar los meta mensajes al track
-        for meta_msg in track[2]:
-            track_i.append(meta_msg)
-
-        # Convierte de timepo absoluto a relativo
-        # Agrega los mensajes de notas al track
-        tiempo_anterior = 0
-        for frequencia, tiempo in zip(track[0], track[1]):
-            
-            tiempo_relativo = int(tiempo) - int(tiempo_anterior)
-            tiempo_anterior = tiempo
-            nota = int(freq2midi(frequencia))
-
-            # Acá se crean los mensajes para agregarlos al track 
-            track_i.append(Message('note_on', note=nota, velocity=100, time=tiempo_relativo))
-
-            # Este "5" es hardcoded porque no hay acceso a los mensajes que muestran el fin de una nota
-            # Cada nota va a durar 5 ticks
-            track_i.append(Message('note_on', note=nota, velocity=0, time=tiempo_relativo+5))
-        
-        mid.tracks.append(track_i)
-        
-    # Estos ciclos con print son solo para ver qué es lo que se está creando
-    for tr in mid.tracks:
-        for ms in tr:
-            print(ms)
-        
-    mid.save("resultado.mid")
-
+        create_txt(i, frequencias, tiempos, meta_msgs)
+    num_tracks_file = open("num_tracks.txt", "w+")
+    num_tracks_file.write(str(i))
+    num_tracks_file.close()
+    print("Control files created succesfully!")
 
 def main():
     song = sys.argv[1]
-    tracks = read_midi(song)
-    create_mid(tracks, song)
+    read_mid(song)
     
 if __name__ == '__main__':
     main()
